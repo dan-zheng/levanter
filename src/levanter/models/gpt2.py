@@ -161,7 +161,9 @@ class Gpt2Attention(StateDictSerializationMixin, eqx.Module):
         Embed = config.Embed
 
         k_c, k_proj = jrandom.split(key, 2)
+        # c_attn: [Embed] -> [Qkv, Heads, HeadSize]
         c_attn = hnn.Linear.init(In=Embed, Out=(Qkv, config.Heads, config.HeadSize), key=k_c, use_bias=use_bias)
+        # c_project: [Heads, HeadSize] -> [Embed]
         c_proj = hnn.Linear.init(In=(config.Heads, config.HeadSize), Out=Embed, key=k_proj, use_bias=use_bias)
         dropout = hnn.Dropout(config.attn_pdrop)
 
@@ -346,7 +348,9 @@ class Gpt2Embeddings(StateDictSerializationMixin, eqx.Module):
     def init(Vocab: Axis, config: Gpt2Config, *, key) -> "Gpt2Embeddings":
         k_wte, k_wpe, k_out = jrandom.split(key, 3)
 
+        # (Vocab, config.Embed)
         token_embeddings = hax.random.normal(k_wte, (Vocab, config.Embed)) * config.initializer_range
+        # (config.Pos, config.Embed)
         position_embeddings = hax.random.normal(k_wpe, (config.Pos, config.Embed)) * (config.initializer_range / 2)
         dropout = hnn.Dropout(pdrop=config.embed_pdrop)
 

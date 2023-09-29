@@ -639,6 +639,7 @@ class OptimizerConfig:
 
     def build(self, num_train_steps: int) -> GradientTransformation:
         """Creates the optimizer"""
+
         # indirection makes it work with optax.inject_hyperparams so we can log the learning rate
         def _optimizer(learning_rate):
             components = []

@@ -6,20 +6,21 @@ import pytest
 import ray
 
 import levanter.main.train_lm as train_lm
-import tiny_test_corpus
+from tests import tiny_test_corpus
 from levanter.distributed import RayConfig
 from levanter.logging import WandbConfig
 from levanter.utils.py_utils import logical_cpu_core_count
+import pynsy.type_inference.tensor_shape_inference as shaper
 
 
-def setup_module(module):
-    ray_designated_cores = max(1, logical_cpu_core_count())
-    ray.shutdown()
-    ray.init("local", num_cpus=ray_designated_cores)
-
-
-def teardown_module(module):
-    ray.shutdown()
+# def setup_module(module):
+#     ray_designated_cores = max(1, logical_cpu_core_count())
+#     ray.shutdown()
+#     ray.init("local", num_cpus=ray_designated_cores)
+#
+#
+# def teardown_module(module):
+#     ray.shutdown()
 
 
 # @pytest.mark.entry
@@ -31,10 +32,20 @@ def test_train_lm():
             config = train_lm.TrainLmConfig(
                 data=data_config,
                 model=train_lm.Gpt2Config(
-                    num_layers=2,
-                    num_heads=2,
-                    seq_len=32,
-                    hidden_dim=32,
+                    # num_layers=2,
+                    # num_heads=2,
+                    # seq_len=32,
+                    # hidden_dim=32,
+                    #
+                    # num_layers=4,
+                    # num_heads=2,
+                    # seq_len=32,
+                    # hidden_dim=16,
+                    #
+                    num_layers=shaper.hyper_parameter(4, "num_layers"),
+                    num_heads=shaper.hyper_parameter(2, "num_heads"),
+                    seq_len=shaper.hyper_parameter(32, "seq_len"),
+                    hidden_dim=shaper.hyper_parameter(16, "hidden_dim"),
                 ),
                 trainer=train_lm.TrainerConfig(
                     num_train_steps=2,

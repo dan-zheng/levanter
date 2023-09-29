@@ -10,6 +10,7 @@ from haliax import Axis, NamedArray
 from haliax.nn import cross_entropy_loss
 
 from levanter.models.attention import AttnMask
+import pynsy.type_inference.tensor_shape_inference as shaper
 
 
 LmConfigT = TypeVar("LmConfigT", bound="LmConfig")
@@ -97,6 +98,8 @@ class LmHeadModel(Generic[LmConfigT], abc.ABC):
         across the reduction axis (with reduction_axis=None meaning all axes). If reduction is None, the loss is not
         reduced, and the result is a named array with axes (*batch axes, sequence_length).
         """
+        # if key is not None:
+        #     shaper.annotate_shape(key, ["key"])
         logits = self(example.tokens, example.attn_mask, key=key)
         target_y = hax.nn.one_hot(example.targets, self.Vocab, dtype=logits.dtype)
         return cross_entropy_loss(

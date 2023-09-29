@@ -1,4 +1,5 @@
 import logging
+import dataclasses
 from dataclasses import dataclass
 
 import equinox as eqx
@@ -28,9 +29,12 @@ logger = logging.getLogger(__name__)
 class VizGpt2Config:
     checkpoint_path: str
     path: str = "logprobs.html"
-    trainer: TrainerConfig = TrainerConfig()
-    data: LMDatasetConfig = LMDatasetConfig()
-    model: LmConfig = Gpt2Config()
+    # trainer: TrainerConfig = TrainerConfig()
+    # data: LMDatasetConfig = LMDatasetConfig()
+    # model: LmConfig = Gpt2Config()
+    trainer: TrainerConfig = dataclasses.field(default_factory=TrainerConfig)
+    data: LMDatasetConfig = dataclasses.field(default_factory=LMDatasetConfig)
+    model: LmConfig = dataclasses.field(default_factory=Gpt2Config)
 
     num_docs: int = 256
 
